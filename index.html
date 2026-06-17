@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Oracle Atelier | 商业塔罗解读工具</title>
+    <meta
+      name="description"
+      content="一个可翻牌、生成结构化塔罗解读的商业化网页小工具。"
+    />
+    <link rel="preload" href="assets/tarot-table.png" as="image" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-label="塔罗解读工作台">
+        <div class="brand-bar">
+          <div class="brand-mark" aria-hidden="true">OA</div>
+          <div>
+            <p class="eyebrow">Oracle Atelier</p>
+            <h1>塔罗牌专业解读</h1>
+          </div>
+        </div>
+
+        <div class="reading-grid">
+          <aside class="control-panel" aria-label="抽牌设置">
+            <div class="panel-section">
+              <label class="field-label" for="questionInput">咨询主题</label>
+              <textarea
+                id="questionInput"
+                rows="4"
+                maxlength="140"
+                placeholder="例如：接下来三个月，我的事业机会在哪里？"
+              ></textarea>
+            </div>
+
+            <div class="panel-section two-fields">
+              <label>
+                <span class="field-label">议题类型</span>
+                <select id="topicSelect">
+                  <option value="事业">事业</option>
+                  <option value="感情">感情</option>
+                  <option value="财富">财富</option>
+                  <option value="自我成长">自我成长</option>
+                </select>
+              </label>
+              <label>
+                <span class="field-label">解读风格</span>
+                <select id="toneSelect">
+                  <option value="理性决策">理性决策</option>
+                  <option value="温柔疗愈">温柔疗愈</option>
+                  <option value="直接犀利">直接犀利</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="panel-section">
+              <span class="field-label">牌阵</span>
+              <div class="spread-tabs" role="tablist" aria-label="牌阵选择">
+                <button class="spread-tab active" type="button" data-spread="single">
+                  单张
+                </button>
+                <button class="spread-tab" type="button" data-spread="three">
+                  三张
+                </button>
+                <button class="spread-tab" type="button" data-spread="five">
+                  五张
+                </button>
+                <button class="spread-tab" type="button" data-spread="daily">
+                  日运
+                </button>
+              </div>
+              <p class="spread-caption" id="spreadCaption">快速聚焦当下能量与关键提醒。</p>
+            </div>
+
+            <div class="panel-section compact-stats" aria-label="本次解读指标">
+              <div>
+                <strong id="cardCount">1/78</strong>
+                <span>张牌</span>
+              </div>
+              <div>
+                <strong id="reversedCount">0</strong>
+                <span>逆位</span>
+              </div>
+              <div>
+                <strong id="clarityScore">--</strong>
+                <span>清晰度</span>
+              </div>
+            </div>
+
+            <div class="action-stack">
+              <button class="primary-action" type="button" id="drawButton">
+                洗牌抽牌
+              </button>
+              <button class="secondary-action" type="button" id="resetButton">
+                重置
+              </button>
+            </div>
+
+            <div class="membership-box">
+              <span class="plan-pill">Pro</span>
+              <h2>深度咨询包</h2>
+              <p>含年度趋势、关系合盘、职业决策与复盘档案。</p>
+              <button type="button" id="proButton">查看方案</button>
+            </div>
+
+            <div class="history-box" aria-label="历史档案">
+              <div class="history-title">
+                <span class="field-label">最近档案</span>
+                <button type="button" id="clearHistoryButton">清空</button>
+              </div>
+              <div class="history-list" id="historyList">
+                <span class="history-empty">暂无保存记录</span>
+              </div>
+            </div>
+          </aside>
+
+          <section class="table-panel" aria-label="抽牌区域">
+            <div class="table-topline">
+              <div>
+                <p class="eyebrow">Current Reading</p>
+                <h2 id="spreadTitle">单张洞察</h2>
+              </div>
+              <div class="reading-state" id="readingState">待抽牌</div>
+            </div>
+
+            <div class="card-board" id="cardBoard" aria-live="polite"></div>
+
+            <div class="deck-strip" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </section>
+
+          <section class="result-panel" aria-label="解读结果">
+            <div class="result-header">
+              <div>
+                <p class="eyebrow">Reading Report</p>
+                <h2>专业解读</h2>
+              </div>
+              <button class="ghost-action" type="button" id="saveButton" disabled>
+                保存
+              </button>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+              <strong>尚未生成解读</strong>
+              <span>抽牌后，翻开牌面即可查看综合报告。</span>
+            </div>
+
+            <article class="reading-report hidden" id="readingReport">
+              <div class="summary-card">
+                <span class="report-kicker">综合结论</span>
+                <p id="summaryText"></p>
+              </div>
+
+              <div class="report-block">
+                <h3>牌位解析</h3>
+                <div class="position-list" id="positionList"></div>
+              </div>
+
+              <div class="report-block">
+                <h3>行动建议</h3>
+                <ul class="advice-list" id="adviceList"></ul>
+              </div>
+
+              <div class="report-block subtle">
+                <h3>边界提醒</h3>
+                <p>
+                  塔罗适合作为自我观察与决策梳理工具，不替代法律、医疗、投资等专业意见。
+                </p>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="pro-dialog" id="proDialog" aria-labelledby="proDialogTitle">
+      <form method="dialog">
+        <div class="dialog-header">
+          <span class="plan-pill">Pro</span>
+          <button type="submit" aria-label="关闭">×</button>
+        </div>
+        <h2 id="proDialogTitle">商业化会员方案</h2>
+        <div class="price-row">
+          <strong>¥29</strong>
+          <span>/ 次深度解读</span>
+        </div>
+        <ul>
+          <li>12 宫位年度牌阵</li>
+          <li>AI 解读师追问式分析</li>
+          <li>历史档案与复盘提醒</li>
+          <li>PDF 咨询报告导出</li>
+        </ul>
+        <button class="primary-action" type="submit">稍后接入支付</button>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
