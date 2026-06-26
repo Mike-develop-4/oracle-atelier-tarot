@@ -1,14 +1,8 @@
 {
   "generatedBy": "website-publish",
-  "generatedAt": "2026-06-17T10:33:28.486Z",
+  "generatedAt": "2026-06-26T14:17:09.252Z",
   "files": [
-    ".gitignore",
     ".nojekyll",
-    "app.js",
-    "assets/tarot-table.png",
-    "index.html",
-    "netlify.toml",
-    "styles.css",
-    "vercel.json"
+    "index.html"
   ]
 }
